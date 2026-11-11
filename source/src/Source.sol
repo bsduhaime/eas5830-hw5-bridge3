@@ -22,10 +22,9 @@ contract Source is AccessControl {
     }
 
 	function deposit(address _token, address _recipient, uint256 _amount ) public {
-		if(approved[_token]){
-			ERC20(_token).transferFrom(msg.sender, _recipient, _amount);
-			emit Deposit(_token, _recipient, _amount);
-		}
+		require(approved[_token], "Unapproved token provided");
+		ERC20(_token).transferFrom(msg.sender, address(this), _amount);
+		emit Deposit(_token, _recipient, _amount);
 	}
 
 	function withdraw(address _token, address _recipient, uint256 _amount ) onlyRole(WARDEN_ROLE) public {
@@ -39,9 +38,7 @@ contract Source is AccessControl {
 			approved[_token] = true;
 		}
 		emit Registration(_token);
-	}
-
-
+  }
 }
 
 
